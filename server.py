@@ -87,6 +87,10 @@ class Client(threading.Thread):
 			else:
 				self.client.close()
 				running = 0
+	def QUIT(self,command):
+		self.client.send('221 Goodbye.\r\n')
+		running = False
+		self.client.close()
 
 if __name__ == "__main__":
 	s = Server()
