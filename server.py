@@ -4,7 +4,7 @@ import sys
 import threading
 
 data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p':'raras'}]
-
+flag = 0
 
 class Server:
 	def __init__(self):
@@ -43,10 +43,18 @@ class Server:
 						for i in data:
 							if (i['u'] == username and i['p']==password):
 								response = "230 Logged on"
-								s.send(response)
+								flag = 1
+								os.chdir("/"+username)
 							else 
 								response = "530 Login or password incorrect!"
-								s.send(response)
+						s.send(response)
+					elif "CWD" in command:
+						if(flag == 1):
+							cdir = command.strip().split('CWD ')[1]
+							if(os.chdir("/"+cdir))
+						else
+							response = "530 Please log in with USER and PASS first."
+							
 
 					running = 0
 
