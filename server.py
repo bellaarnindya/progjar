@@ -1,3 +1,4 @@
+import os
 import socket
 import select
 import sys
@@ -15,7 +16,7 @@ class Server:
 
 	def open_socket(self):
 		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.server.setockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		self.server.bind((self.host, self.port))
 		self.server.listen(5)
 
@@ -45,14 +46,14 @@ class Server:
 								response = "230 Logged on"
 								flag = 1
 								os.chdir("/"+username)
-							else 
+							else: 
 								response = "530 Login or password incorrect!"
 						s.send(response)
 					elif "CWD" in command:
 						if(flag == 1):
 							cdir = command.strip().split('CWD ')[1]
-							if(os.chdir("/"+cdir))
-						else
+							#if(os.chdir("/"+cdir))
+						else:
 							response = "530 Please log in with USER and PASS first."
 							
 
