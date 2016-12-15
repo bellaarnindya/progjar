@@ -2,6 +2,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from select import select
 import sys
 
+
 client_socket = socket(AF_INET, SOCK_STREAM)
 client_socket.connect(('localhost', 21))
 
@@ -15,16 +16,16 @@ while True:
 			print msg,
 
 commands = []
-commands.append('USER progjar\r\n')
-commands.append('PASS efpe\r\n')
-commands.append('CWD\r\n')
-commands.append('QUIT\r\n')
+commands.append('USER sabila\r\n')
+commands.append('PASS rani\r\n')
+#commands.append('CWD\r\n')
+#commands.append('QUIT\r\n')
 
 i = 0
 
 while i<len(commands):
 	client_socket.send(commands[i])
-	msg = client_socket.recv(2048)
+	msg = client_socket.recv(1024)
 	print msg,
 	i+=1
 

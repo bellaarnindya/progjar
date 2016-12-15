@@ -1,0 +1,94 @@
+import os
+import socket
+import select
+import sys
+import threading
+
+data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p':'raras'}]
+flag = 0
+
+class Server:
+	def __init__(self):
+		self.host = 'localhost'
+		self.port = 21
+		self.size = 1024
+		self.threads = []
+
+	def open_socket(self):
+		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.server.bind((self.host, self.port))
+		self.server.listen(5)
+
+	def run(self):
+		self.open_socket()
+		input = [self.server, sys.stdin]
+		running = 1
+		while running:
+			inputready, outputready, exceptready = select.select(input,[],[])
+
+			for s in inputready:
+				if s == self.server:
+					c = Client(self.server.accept())
+					c.start()
+					self.threads.append(c)
+
+				elif s==sys.stdin:
+					command = s.recv(size)
+					if "USER" in command:
+						username = command.strip().split(' ')[1]
+						response = "331 Password required for "+username
+						s.send(response)
+					elif "PASS" in command:
+						password = command.strip().split(' ')[1]
+						for i in data:
+							if (i['u'] == username and i['p']==password):
+								response = "230 Logged on"
+								flag = 1
+								os.chdir("/"+username)
+							else: 
+								response = "530 Login or password incorrect!"
+						s.send(response)
+					elif "CWD" in command:
+						if(flag == 1):
+							cdir = command.strip().split('CWD ')[1]
+<<<<<<< HEAD
+							#if(os.chdir("/"+cdir))
+						else:
+=======
+							path = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/fp/progjar"
+							directory = os.chdir(path+"/"+cdir)
+							#if(os.chdir("/"+cdir))
+
+						else:
+>>>>>>> e259dfd19a4af957c98df3e8cd4fa2ae0d2fe73a
+							response = "530 Please log in with USER and PASS first."
+						s.send(response)
+
+					running = 0
+
+		self.server.close()
+		for c in self.threads:
+			c.join()
+
+class Client(threading.Thread):
+	def __init__(self,(client,address)):
+		threading.Thread.__init__(self)
+		self.client = client
+		self.address = address
+		self.size = 1024
+
+	def run(self):
+		running = 1
+		while running:
+			data = self.client.recv(self.size)
+			print 'recv: ', self.address, data
+			if data:
+				self.client.send(data)
+			else:
+				self.client.close()
+				running = 0
+
+if __name__ == "__main__":
+	s = Server()
+	s.run()
