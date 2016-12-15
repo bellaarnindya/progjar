@@ -52,10 +52,13 @@ class Server:
 					elif "CWD" in command:
 						if(flag == 1):
 							cdir = command.strip().split('CWD ')[1]
+							path = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/fp/progjar"
+							directory = os.chdir(path+"/"+cdir)
 							#if(os.chdir("/"+cdir))
+
 						else:
 							response = "530 Please log in with USER and PASS first."
-							
+						s.send(response)
 
 					running = 0
 
