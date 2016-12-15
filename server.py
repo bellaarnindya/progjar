@@ -69,9 +69,10 @@ class Client(threading.Thread):
 							response = "230 Logged on\r\n"
 							flag = 1
 							break
+						else:
+							response = "530 Login or password incorrect!\r\n"
 							#os.chdir("/"+username)	
 						i+=1
-					response = "530 Login or password incorrect!\r\n"
 					self.client.send(response)
 				elif "CWD" in command:
 					if(flag == 1):
