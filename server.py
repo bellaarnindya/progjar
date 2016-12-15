@@ -3,6 +3,9 @@ import select
 import sys
 import threading
 
+data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p':'raras'}]
+
+
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
@@ -30,7 +33,21 @@ class Server:
 					self.threads.append(c)
 
 				elif s==sys.stdin:
-					command = sys.stdin.readline()
+					command = s.recv(size)
+					if "USER" in command:
+						username = command.strip().split(' ')[1]
+						response = "331 Password required for "+username
+						s.send(response)
+					elif "PASS" in command:
+						password = command.strip().split(' ')[1]
+						for i in data:
+							if (i['u'] == username and i['p']==password):
+								response = "230 Logged on"
+								s.send(response)
+							else 
+								response = "530 Login or password incorrect!"
+								s.send(response)
+
 					running = 0
 
 		self.server.close()
