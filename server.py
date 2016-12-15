@@ -45,7 +45,7 @@ class Server:
 								response = "230 Logged on"
 								flag = 1
 								os.chdir("/"+username)
-							else 
+							else:
 								response = "530 Login or password incorrect!"
 						s.send(response)
 					elif "CWD" in command:
@@ -53,9 +53,9 @@ class Server:
 							cdir = command.strip().split('CWD ')[1]
 							path = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/fp/progjar"
 							directory = os.chdir(path+"/"+cdir)
-							if(os.chdir("/"+cdir))
+							#if(os.chdir("/"+cdir))
 
-						else
+						else:
 							response = "530 Please log in with USER and PASS first."
 						s.send(response)
 
