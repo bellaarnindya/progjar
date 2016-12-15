@@ -3,6 +3,7 @@ import select
 import sys
 import threading
 
+
 data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p':'raras'}]
 flag = 0
 
@@ -10,21 +11,23 @@ class Server:
 	def __init__(self):
 		self.host = 'localhost'
 		self.port = 21
+		self.backlog = 5
 		self.size = 1024
+		self.server = None
 		self.threads = []
 
 	def open_socket(self):
 		self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.server.setockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		self.server.bind((self.host, self.port))
 		self.server.listen(5)
 
 	def run(self):
 		self.open_socket()
-		input = [self.server, sys.stdin]
+		inp = [self.server]
 		running = 1
 		while running:
-			inputready, outputready, exceptready = select.select(input,[],[])
+			inputready, outputready, exceptready = select.select(inp,[],[])
 
 			for s in inputready:
 				if s == self.server:
@@ -33,37 +36,13 @@ class Server:
 					self.threads.append(c)
 
 				elif s==sys.stdin:
-					command = s.recv(size)
-					if "USER" in command:
-						username = command.strip().split(' ')[1]
-						response = "331 Password required for "+username
-						s.send(response)
-					elif "PASS" in command:
-						password = command.strip().split(' ')[1]
-						for i in data:
-							if (i['u'] == username and i['p']==password):
-								response = "230 Logged on"
-								flag = 1
-								os.chdir("/"+username)
-							else:
-								response = "530 Login or password incorrect!"
-						s.send(response)
-					elif "CWD" in command:
-						if(flag == 1):
-							cdir = command.strip().split('CWD ')[1]
-							path = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/fp/progjar"
-							directory = os.chdir(path+"/"+cdir)
-							#if(os.chdir("/"+cdir))
-
-						else:
-							response = "530 Please log in with USER and PASS first."
-						s.send(response)
-
+					junk = sys.stdin.readline()
 					running = 0
 
 		self.server.close()
 		for c in self.threads:
 			c.join()
+		sys.exit(0)
 
 class Client(threading.Thread):
 	def __init__(self,(client,address)):
@@ -75,10 +54,35 @@ class Client(threading.Thread):
 	def run(self):
 		running = 1
 		while running:
-			data = self.client.recv(self.size)
-			print 'recv: ', self.address, data
-			if data:
-				self.client.send(data)
+			command = self.client.recv(self.size)
+			print 'recv: ', self.address, command
+			if command:
+				if "USER" in command:
+					username = command.strip().split(' ')[1]
+					response = "331 Password required for "+username+"\r\n"
+					self.client.send(response)
+				elif "PASS" in command:
+					password = command.strip().split(' ')[1]
+					i=0
+					while i<len(data):
+						if data[i]['u'] == username and data[i]['p']==password:
+							response = "230 Logged on\r\n"
+							flag = 1
+							break
+						else:
+							response = "530 Login or password incorrect!\r\n"
+						i+=1
+					self.client.send(response)
+				elif "CWD" in command:
+					if(flag == 1):
+						cdir = command.strip().split('CWD ')[1]
+						path = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/fp/progjar"
+						#directory = os.chdir(path+"/"+cdir)
+						#if(os.chdir("/"+cdir))
+
+					else:
+						response = "530 Please log in with USER and PASS first.\r\n"
+					self.client.send(response)
 			else:
 				self.client.close()
 				running = 0
