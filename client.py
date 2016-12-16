@@ -15,16 +15,9 @@ while True:
 			msg = read.recv(2048)
 			print msg,
 
-commands = []
-commands.append('USER sabila\r\n')
-commands.append('PASS rani\r\n')
-#commands.append('CWD\r\n')
-#commands.append('QUIT\r\n')
-
-i = 0
-
-while i<len(commands):
-	client_socket.send(commands[i])
+while True:
+	command = sys.stdin.readline()
+	client_socket.send(command)
 	msg = client_socket.recv(1024)
 	print msg,
 	i+=1
