@@ -20,6 +20,5 @@ while True:
 	client_socket.send(command)
 	msg = client_socket.recv(1024)
 	print msg,
-	i+=1
 
 client_socket.close()
