@@ -5,6 +5,7 @@ import threading
 import os
 
 #rani
+#raras
 data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p':'raras'}]
 flag = 0
 class Server:
