@@ -22,6 +22,10 @@ while True:
 					cetak=msgprint[a].split(' ')[-1] 
 					print cetak
 					a+=1
+			elif "221" in command:
+				client_socket.close()
+				sys.exit(0)
+				break	
 			msg = read.recv(1024)
 			print msg,
 
