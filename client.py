@@ -4,7 +4,7 @@ import sys
 
 
 client_socket = socket(AF_INET, SOCK_STREAM)
-client_socket.connect(('localhost', 21))
+client_socket.connect(('localhost', 52))
 
 
 while True:
