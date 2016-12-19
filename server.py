@@ -11,7 +11,7 @@ flag = 0
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
-		self.port = 21
+		self.port = 52
 		self.backlog = 5
 		self.size = 1024
 		self.server = None
@@ -52,35 +52,42 @@ class Client(threading.Thread):
 
 	def run(self):
 		running = 1
-		path = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/fp"
+		base = "D:/Docs/ITS/Kuliah/Semester 5/PROGJAR/FP/progjar"
 		while running:
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
 			if command:
 				if "USER" in command:
 					username = command.strip().split(' ')[1]
+					print username
 					response = "331 Password required for "+username
 					self.client.send(response)
 				elif "PASS" in command:
 					password = command.strip().split(' ')[1]
+					print password
 					i=0
 					while i<len(data):
 						if (data[i]['u'] == username and data[i]['p']==password):
 							response = "230 Logged on\r\n"
-							os.chdir(path+"/"+username)
-							path = path+"/"+username
+							os.chdir(base+"/"+username)
+							path = base+"/"+username
 							flag = 1
 							break
 						else:
 							response = "530 Login or password incorrect!"
+							username = ''
 						i+=1
 					self.client.send(response)
 				elif "CWD" in command:
 					if(flag == 1):
 						cdir = command.strip().split('CWD ')[1]
 						if (os.path.isdir(path+"/"+cdir)):
-							os.chdir(path+"/"+cdir)
-							response = "250 CWD successful. "+cdir+" is current directory."
+							if ".." in cdir:
+								os.chdir(base+"/"+username)
+								response = "250 CWD successful. "+cdir+" is current directory."
+							else
+								os.chdir(path+"/"+cdir)
+								response = "250 CWD successful. "+cdir+" is current directory."
 						else:
 							response = "550 CWD failed. "+cdir+": directory not found."
 					else:
