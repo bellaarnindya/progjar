@@ -143,7 +143,7 @@ class Client(threading.Thread):
 						newpath=path+"/"+ddir
 						if not os.path.exists(newpath):
 							os.mkdir(newpath)
-							response = "direktori terbuat"
+							response = "257 Directory created.\r\n"
 						else:
 							response = "Direktori sudah ada"
 						self.client.send(response)
@@ -153,6 +153,8 @@ class Client(threading.Thread):
 							cetak=cetak+"\r\n"+file
 							print(file)
 						self.client.send(cetak)
+					elif "HELP" in command:
+						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRETR\r\nSTOR\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nPWD\r\nLIST\r\nHELP\r\n')
 			else:
 				self.client.close()
 				running = 0
