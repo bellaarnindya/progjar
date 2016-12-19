@@ -22,7 +22,7 @@ while True:
 	command = sys.stdin.readline()
 	client_socket.send(command)
 	if "LIST" in command:
-		msg=clien_socket.recv(1024)
+		msg=client_socket.recv(1024)
 		msgprint=msg.strip.split('\r\n')
 		a=0
 		b=len(msgprint)
@@ -31,35 +31,35 @@ while True:
 			print cetak
 			a+=1
 	elif "STOR" in command:
-		part = command.split()
-		fstor = ' '.join(part[1:])
+		#part = command.split()
+		#fstor = ' '.join(part[1:])
 		msg = client_socket.recv(1024)
 		path = msg
-		if(not os.path.isfile(path+"/"+fstor)):
+		print path
+		if(not os.path.isfile(path)):
 			print "ga ada"
 			continue
 		#get size
-		buff = os.path.getsize(path+"/"+fstor)
+		buff = os.path.getsize(path)
 		
 		#buat header
-		header = "file-size: "+str(os.path.getsize(path+"/"+fstor))
+		header = "file-size: "+str(buff)
 		header = header+"\n"
 		client_socket.send(header)
 
 		#baca file
-		baca = open(path+"/"+fstor, "rb")
+		baca = open(path, "rb")
 		while(buff > 0):
 			box = baca.read(1024)
 			client_socket.send(box)
 			buff -= 1024
-			break
 		baca.close()
 
 		#get status
 		status = client_socket.recv(1024)
 		print status
 
-	elif "221" in command:
+	elif "QUIT" in command:
 		client_socket.close()
 		sys.exit(0)
 		break
