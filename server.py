@@ -8,10 +8,11 @@ import os
 #raras
 data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p':'raras'}]
 flag = 0
+src = ''
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
-		self.port = 21
+		self.port = 52
 		self.backlog = 5
 		self.size = 1024
 		self.server = None
@@ -84,14 +85,36 @@ class Client(threading.Thread):
 						if (os.path.isdir(path+"/"+cdir)):
 							if ".." in cdir:
 								os.chdir(base+"/"+username)
-								response = "250 CWD successful. "+cdir+" is current directory."
-							else
+								response = "250 CWD successful. "+username+" is current directory."
+							else:
 								os.chdir(path+"/"+cdir)
 								response = "250 CWD successful. "+cdir+" is current directory."
 						else:
 							response = "550 CWD failed. "+cdir+": directory not found."
 					else:
 						response = "530 Please log in with USER and PASS first."
+					self.client.send(response)
+				elif "RNFR" in command:
+					if(flag == 1):
+						dirc = command.strip().split('RNFR ')[1]
+						if (os.path.isdir(path+"/"+dirc)):
+							src = dirc
+							response = "ada foldernya"
+						else:
+							response = "ga ada foldernya"
+					else:
+						response = "530 Please log in with USER and PASS first."
+					self.client.send(response)
+				elif "RNTO" in command:
+					if(flag==1):
+						if src != '':
+							dst = command.strip().split('RNTO ')[1]
+							os.rename(src,dst)
+							response = "bisa ganti nama folder"
+						else:
+							response = "belum nentuin folder mana yg mau direname"
+					else:
+						response = "530 Please log in with USER and PASS first."	
 					self.client.send(response)
 			else:
 				self.client.close()
