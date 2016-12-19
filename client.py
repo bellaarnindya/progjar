@@ -13,6 +13,15 @@ while True:
 		break
 	else:
 		for read in reads:
+			if "LIST" in command:
+				msg=read.recv(1024)
+				msgprint=msg.strip.split('\r\n')
+				a=0
+				b=len(msgprint)
+				while a<b :
+					cetak=msgprint[a].split(' ')[-1] 
+					print cetak
+					a+=1
 			msg = read.recv(1024)
 			print msg,
 
