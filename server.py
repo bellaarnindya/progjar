@@ -84,6 +84,14 @@ class Client(threading.Thread):
 						response = "530 Please log in with USER and PASS first."
 					self.client.send(response)
 				elif(flag==1):	
+					if "PWD" in command:
+						pwd = os.path.relpath(os.getcwd(), base+"/"+username)
+						if pwd == '.':
+							pdir = '/'
+						else:
+							pdir = '/'+pwd
+						response = "257 \""+pdir+"\" is current directory."
+						self.client.send(response)
 					if "CWD" in command:
 						cdir = command.strip().split('CWD ')[1]
 						if (os.path.isdir(path+"/"+cdir)):
