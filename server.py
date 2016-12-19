@@ -12,7 +12,7 @@ username = ''
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
-		self.port = 21
+		self.port = 52
 		self.backlog = 5
 		self.size = 1024
 		self.server = None
@@ -69,28 +69,17 @@ class Client(threading.Thread):
 						password = command.strip().split(' ')[1]
 						#print password
 						i=0
-						for d in data:
-							print i, d['u'], d['p']
-							if (d['u']==username and d['p']==password):
+						while i<len(data):
+							if (data[i]['u'] == username and data[i]['p']==password):
 								response = "230 Logged on\r\n"
 								os.chdir(base+"/"+username)
 								path = base+"/"+username
 								flag = 1
 								break
-							else:
+							elif (i+1 == len(data)):
 								response = "530 Login or password incorrect!"
 								username = ''
-						#while i<=len(data):
-						#	if (data[i]['u'] == username and data[i]['p']==password):
-						#		response = "230 Logged on\r\n"
-						#		os.chdir(base+"/"+username)
-						#		path = base+"/"+username
-						#		flag = 1
-						#		break
-						#	else:
-						#		response = "530 Login or password incorrect!"
-						#		username = ''
-						#	i+=1
+							i+=1
 					else:
 						response = "530 Please log in with USER and PASS first."
 					self.client.send(response)
