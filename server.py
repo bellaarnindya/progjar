@@ -6,9 +6,9 @@ import os
 
 #rani
 #raras
-data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
 src = ''
 username = ''
+data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
@@ -121,33 +121,33 @@ class Client(threading.Thread):
 						dirc = command.strip().split('RNFR ')[1]
 						if (os.path.isdir(path+"/"+dirc)):
 							src = dirc
-							response = "ada foldernya"
+							response = "350 Directory exists, ready for destination name."
 						else:
-							response = "ga ada foldernya"				
+							response = "550 file/directory not found"				
 						self.client.send(response)
 					elif "RNTO" in command:
-						if src != '':
+						if src:
 							dst = command.strip().split('RNTO ')[1]
 							os.rename(src,dst)
-							response = "bisa ganti nama folder"
+							response = "250 file renamed succesfully"
 						else:
-							response = "belum nentuin folder mana yg mau direname"
+							response = "503 Bad sequence of commands!"
 						self.client.send(response)
 					elif "DELE" in command:
 						dfile = command.strip().split('DELE ')[1]
 						if(os.path.isfile(path+"/"+dfile)):
 							os.remove(dfile)
-							response = "udah keapus"
+							response = "250 File deleted successfully"
 						else:
-							response = "ga ada filenya"
+							response = "550 File not found"
 						self.client.send(response)
 					elif "RMD" in command:
 						ddir = command.strip().split('RMD ')[1]
 						if(os.path.isdir(path+"/"+ddir)):
 							os.rmdir(ddir)
-							response = "direktori terhapus"
+							response = "250 Directory deleted successfully"
 						else:
-							response = "Tidak ada direktori"
+							response = "550 Directory not found"
 						self.client.send(response)
 					elif "LIST" in command:
 						cetak=''
