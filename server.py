@@ -54,7 +54,7 @@ class Client(threading.Thread):
 	def run(self):
 		flag = 0
 		running = 1
-		base = "E:/KULIAH/SEMESTER 5/PROGJAR/progjar"
+		base = "D:/Docs/ITS/Kuliah/Semester 5/PROGJAR/FP/progjar"
 		while running:
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
@@ -97,9 +97,10 @@ class Client(threading.Thread):
 								os.chdir(path)
 								response = "250 CWD successful. \""+cetak+"\" is current directory."
 							else:
-								os.chdir(path+"/"+cdir)
 								path = path+"/"+cdir
-								response = "250 CWD successful. "+cdir+" is current directory."
+								os.chdir(path)
+								cetak = path.split(base+"/"+username)[1]
+								response = "240 CWD successful. \""+cetak+"\" is current directory."
 						else:
 							response = "550 CWD failed. "+cdir+": directory not found."
 						self.client.send(response)
