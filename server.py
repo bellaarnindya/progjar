@@ -130,6 +130,15 @@ class Client(threading.Thread):
 						else:
 							response = "Tidak ada direktori"
 						self.client.send(response)
+					elif "MKD" in command:
+						newpath = r 'E:/KULIAH/SEMESTER 5/PROGJAR/progjar'
+						ddir = command.strip().split('RMD ')[1]
+						if not os.path.exists(newpath):
+							os.mkdir(newpath
+							response = "direktori terbuat"
+						else:
+							response = "Direktori sudah ada"
+						self.client.send(response)
 			else:
 				self.client.close()
 				running = 0
