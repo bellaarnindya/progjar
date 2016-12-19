@@ -59,6 +59,43 @@ while True:
 		status = client_socket.recv(1024)
 		print status
 
+	elif "RETR" in command:
+		
+		part = command.split()
+		fstor = ' '.join(part[1:])
+		client_socket.send(fstor)
+		
+		#get header
+		temp_head = client_socket.recv(1024)
+		print temp_head
+		
+		#get size
+		temp_size = temp_head.split('\n')[0]
+		temp_size = temp_size.split(' ')[1]
+		temp_size = int(temp_size)
+		print temp_size
+
+		#tulis file
+		# now = os.getcwd()
+		print fstor
+		tulis = open("E:/KULIAH/SEMESTER 5/PROGJAR/FP"+"/"+fstor, 'wb')
+		tanda = False
+		while True:
+			box = client_socket.recv(1024)
+			temp_size -= 1024
+			tulis.write(box)
+			if(temp_size<=0):
+				tanda = True
+				break
+		tulis.close
+
+		#kirim status
+		if tanda == True:
+			response = "berhasil kirim"
+		else:
+			response = "gagal kirim"
+		client_socket.send(response)
+		
 	elif "QUIT" in command:
 		client_socket.close()
 		sys.exit(0)
