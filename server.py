@@ -108,7 +108,7 @@ class Client(threading.Thread):
 								path = path+"/"+cdir
 								os.chdir(path)
 								cetak = path.split(base+"/"+username)[1]
-								response = "240 CWD successful. \""+cetak+"\" is current directory."
+								response = "250 CWD successful. \""+cetak+"\" is current directory."
 						else:
 							response = "550 CWD failed. "+cdir+": directory not found."
 						self.client.send(response)
