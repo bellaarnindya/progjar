@@ -6,9 +6,9 @@ import os
 
 #rani
 #raras
-data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p':'raras'}]
-flag = 0
+data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
 src = ''
+username = ''
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
@@ -52,70 +52,87 @@ class Client(threading.Thread):
 		self.size = 1024
 
 	def run(self):
+		flag = 0
 		running = 1
 		base = "D:/Docs/ITS/Kuliah/Semester 5/PROGJAR/FP/progjar"
 		while running:
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
 			if command:
-				if "USER" in command:
-					username = command.strip().split(' ')[1]
-					print username
-					response = "331 Password required for "+username
+				print flag
+				if(flag==0):
+					if "USER" in command:
+						username = command.strip().split(' ')[1]
+						#print username
+						response = "331 Password required for "+username
+					elif "PASS" in command:
+						password = command.strip().split(' ')[1]
+						#print password
+						i=0
+						for d in data:
+							print i, d['u'], d['p']
+							if (d['u']==username and d['p']==password):
+								response = "230 Logged on\r\n"
+								os.chdir(base+"/"+username)
+								path = base+"/"+username
+								flag = 1
+								break
+							else:
+								response = "530 Login or password incorrect!"
+								username = ''
+						#while i<=len(data):
+						#	if (data[i]['u'] == username and data[i]['p']==password):
+						#		response = "230 Logged on\r\n"
+						#		os.chdir(base+"/"+username)
+						#		path = base+"/"+username
+						#		flag = 1
+						#		break
+						#	else:
+						#		response = "530 Login or password incorrect!"
+						#		username = ''
+						#	i+=1
+					else:
+						response = "530 Please log in with USER and PASS first."
 					self.client.send(response)
-				elif "PASS" in command:
-					password = command.strip().split(' ')[1]
-					print password
-					i=0
-					while i<len(data):
-						if (data[i]['u'] == username and data[i]['p']==password):
-							response = "230 Logged on\r\n"
-							os.chdir(base+"/"+username)
-							path = base+"/"+username
-							flag = 1
-							break
-						else:
-							response = "530 Login or password incorrect!"
-							username = ''
-						i+=1
-					self.client.send(response)
-				elif "CWD" in command:
-					if(flag == 1):
+				elif(flag==1):	
+					if "CWD" in command:
 						cdir = command.strip().split('CWD ')[1]
 						if (os.path.isdir(path+"/"+cdir)):
 							if ".." in cdir:
 								os.chdir(base+"/"+username)
+								path = base+"/"+username
 								response = "250 CWD successful. "+username+" is current directory."
 							else:
 								os.chdir(path+"/"+cdir)
+								path = path+"/"+cdir
 								response = "250 CWD successful. "+cdir+" is current directory."
 						else:
 							response = "550 CWD failed. "+cdir+": directory not found."
-					else:
-						response = "530 Please log in with USER and PASS first."
-					self.client.send(response)
-				elif "RNFR" in command:
-					if(flag == 1):
+						self.client.send(response)
+					elif "RNFR" in command:
 						dirc = command.strip().split('RNFR ')[1]
 						if (os.path.isdir(path+"/"+dirc)):
 							src = dirc
 							response = "ada foldernya"
 						else:
-							response = "ga ada foldernya"
-					else:
-						response = "530 Please log in with USER and PASS first."
-					self.client.send(response)
-				elif "RNTO" in command:
-					if(flag==1):
+							response = "ga ada foldernya"				
+						self.client.send(response)
+					elif "RNTO" in command:
 						if src != '':
 							dst = command.strip().split('RNTO ')[1]
 							os.rename(src,dst)
 							response = "bisa ganti nama folder"
 						else:
 							response = "belum nentuin folder mana yg mau direname"
-					else:
-						response = "530 Please log in with USER and PASS first."	
-					self.client.send(response)
+						self.client.send(response)
+					elif "DELE" in command:
+						dfile = command.strip().split('DELE ')[1]
+						if(os.path.isfile(path+"/"+dfile)):
+							os.remove(dfile)
+							response = "udah keapus"
+						else:
+							response = "ga ada filenya"
+						self.client.send(response)
 			else:
 				self.client.close()
 				running = 0
