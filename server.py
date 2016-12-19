@@ -85,7 +85,7 @@ class Client(threading.Thread):
 					self.client.send(response)
 				elif(flag==1):
 					if "PWD" in command:
-						cdir = command.strip().split('PWD ')[1]
+						pdir = command.strip().split('PWD ')[1]
 						if (os.path.realpath(__file__)):
 							if "." in pdir:
 								os.dirname(os.path.realpath(__file__))
