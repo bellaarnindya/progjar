@@ -54,7 +54,7 @@ class Client(threading.Thread):
 	def run(self):
 		flag = 0
 		running = 1
-		base = "E:/KULIAH/SEMESTER 5/PROGJAR/progjar"
+		base = "E:/KULIAH/SEMESTER 5/PROGJAR/efpeh/progjar"
 		while running:
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
@@ -139,6 +139,12 @@ class Client(threading.Thread):
 						else:
 							response = "Direktori sudah ada"
 						self.client.send(response)
+					elif "LIST" in command:
+						cetak=''
+						for file in os.listdir(path):
+							cetak=cetak+"\r\n"+file
+							print(file)
+						self.client.send(cetak)
 			else:
 				self.client.close()
 				running = 0
