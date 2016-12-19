@@ -52,6 +52,7 @@ class Client(threading.Thread):
 		self.size = 1024
 
 	def run(self):
+		self.client.send('220 Welcome!\r\nSilahkan masukkan Username dan Password dahulu.\r\n')
 		flag = 0
 		running = 1
 		base = "D:/Docs/ITS/Kuliah/Semester 5/PROGJAR/FP/progjar"
@@ -157,6 +158,24 @@ class Client(threading.Thread):
 						self.client.send(cetak)
 					elif "HELP" in command:
 						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRETR\r\nSTOR\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nLIST\r\nHELP\r\n')
+					elif "RETR" in command:
+						cmd = command.split("\r\n")
+						#name = cmd[0].split("RETR ")[1]
+						name = command.strip().split('RETR ')[1]
+						file_path = os.path.join(os.getcwd(),name.strip())
+						print 'Downloading: ',file_path
+						size = str(os.path.getsize(file_path))
+						self.client.send(size)
+						fileopen = open(name, "rb")
+						data = fileopen.read(self.size)
+						while True:
+							if not data:
+								break
+							self.client.send(data)
+							data = fileopen.read(self.size)
+						fileopen.close()
+						print 'done\r\n'
+						self.client.send('226 Transfer complete.\r\n')
 			else:
 				self.client.close()
 				running = 0
