@@ -8,7 +8,7 @@ import os
 #raras
 src = ''
 username = ''
-data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
+#data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
@@ -57,6 +57,7 @@ class Client(threading.Thread):
 		running = 1
 		base = "D:/Docs/ITS/Kuliah/Semester 5/PROGJAR/FP/progjar"
 		while running:
+			data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
 			if command:
@@ -176,6 +177,42 @@ class Client(threading.Thread):
 						fileopen.close()
 						print 'done\r\n'
 						self.client.send('226 Transfer complete.\r\n')
+					elif "STOR" in command:
+						server = base+"/unggah/"
+						part = command.split()
+						fstor = ' '.join(part[1:])
+						self.client.send(path)
+						
+						#get header
+						temp_head = self.client.recv(1024)
+						print temp_head
+						
+						#get size
+						temp_size = temp_head.split('\n')[0]
+						temp_size = temp_size.split(' ')[1]
+						temp_size = int(temp_size)
+						print temp_size
+
+						#tulis file
+						tulis = open(server+fstor, 'wb')
+						tanda = False
+						while True:
+							box = self.client.recv(1024)
+							temp_size -= 1024
+							tulis.write(box)
+							if(temp_size<=0):
+								tanda = True
+								break
+						tulis.close
+
+						#kirim status
+						if tanda == True:
+							response = "berhasil kirim"
+						else:
+							response = "gagal kirim"
+						self.client.send(response)
+
+
 			else:
 				self.client.close()
 				running = 0
