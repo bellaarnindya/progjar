@@ -85,19 +85,20 @@ class Client(threading.Thread):
 					self.client.send(response)
 				elif(flag==1):
 					if "PWD" in command:
-						if (os.getcwd() == base+"/"+username):
-							pdir = "/"
-						else:
-							pdir = os.getcwd().split(base+"/"+username)[1]
-						response = "257 \""+pdir+"\"is current directory."
+						response = "257 \""+pdir+"\" is current directory."
 						self.client.send(response)
 					elif "CWD" in command:
+						print path
+						last = os.getcwd()
 						cdir = command.strip().split('CWD ')[1]
 						if (os.path.isdir(path+"/"+cdir)):
-							if ".." in cdir:
-								os.chdir(base+"/"+username)
-								path = base+"/"+username
-								response = "250 CWD successful. "+username+" is current directory."
+							if cdir == "..":
+								path = last.split('')[-1]
+								print path
+								print last
+								cwd = last.split(path)[0]
+								print cwd
+								response = "250 CWD successful. \"/"+cwd+" is current directory."
 							else:
 								os.chdir(path+"/"+cdir)
 								path = path+"/"+cdir
