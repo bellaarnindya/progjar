@@ -54,7 +54,7 @@ class Client(threading.Thread):
 	def run(self):
 		flag = 0
 		running = 1
-		base = "E:/KULIAH/SEMESTER 5/PROGJAR/efpeh/progjar"
+		base = "E:/KULIAH/SEMESTER 5/PROGJAR/progjar"
 		while running:
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
@@ -83,8 +83,16 @@ class Client(threading.Thread):
 					else:
 						response = "530 Please log in with USER and PASS first."
 					self.client.send(response)
-				elif(flag==1):	
-					if "CWD" in command:
+				elif(flag==1):
+					if "PWD" in command:
+						cdir = command.strip().split('PWD ')[1]
+						if (os.path.dirname(path+"/"+pdir)):
+							path = base+"/"+username
+							response = "257 PWD successful. "+username+" is path work directory."
+						else:
+							response = "550 PWD failed. "+dirname+" directory is not here."
+						self.client.send(response)
+					elif "CWD" in command:
 						cdir = command.strip().split('CWD ')[1]
 						if (os.path.isdir(path+"/"+cdir)):
 							if ".." in cdir:
@@ -152,4 +160,4 @@ class Client(threading.Thread):
 
 if __name__ == "__main__":
 	s = Server()
-s.run()
+	s.run()
