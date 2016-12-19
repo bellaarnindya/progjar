@@ -131,14 +131,18 @@ class Client(threading.Thread):
 							response = "Tidak ada direktori"
 						self.client.send(response)
 					elif "MKD" in command:
-						newpath = r 'E:/KULIAH/SEMESTER 5/PROGJAR/progjar'
-						ddir = command.strip().split('RMD ')[1]
+						ddir = command.strip().split('MKD ')[1]
+						newpath=path+"/"+ddir
 						if not os.path.exists(newpath):
-							os.mkdir(newpath
+							os.mkdir(newpath)
 							response = "direktori terbuat"
 						else:
 							response = "Direktori sudah ada"
 						self.client.send(response)
+dn=os.path.join(self.cwd,command[4:-1])
+		os.mkdir(dn)
+		self.client.send('257 Directory created.\r\n')
+
 			else:
 				self.client.close()
 				running = 0
@@ -146,4 +150,4 @@ class Client(threading.Thread):
 
 if __name__ == "__main__":
 	s = Server()
-	s.run()
+s.run()
