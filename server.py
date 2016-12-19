@@ -55,7 +55,7 @@ class Client(threading.Thread):
 		self.client.send('220 Welcome!\r\nSilahkan masukkan Username dan Password dahulu.\r\n')
 		flag = 0
 		running = 1
-		base = "D:/Docs/ITS/Kuliah/Semester 5/PROGJAR/FP/progjar"
+		base = "E:/KULIAH/SEMESTER 5/PROGJAR/progjar"
 		while running:
 			data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
 			command = self.client.recv(self.size)
@@ -181,7 +181,8 @@ class Client(threading.Thread):
 						server = base+"/unggah/"
 						part = command.split()
 						fstor = ' '.join(part[1:])
-						self.client.send(path)
+						self.client.send(server+fstor)
+						print server+fstor
 						
 						#get header
 						temp_head = self.client.recv(1024)
@@ -194,7 +195,8 @@ class Client(threading.Thread):
 						print temp_size
 
 						#tulis file
-						tulis = open(server+fstor, 'wb')
+						now = os.getcwd()
+						tulis = open(now+"/"+fstor, 'wb')
 						tanda = False
 						while True:
 							box = self.client.recv(1024)
