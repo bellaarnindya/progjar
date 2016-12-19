@@ -106,6 +106,11 @@ class Client(threading.Thread):
 						else:
 							response = "550 CWD failed. "+cdir+": directory not found."
 						self.client.send(response)
+					elif "QUIT" in command:
+						response = "221 Goodbye."
+						self.client.send(response)
+						self.running = False
+						self.client.close()
 					elif "RNFR" in command:
 						dirc = command.strip().split('RNFR ')[1]
 						if (os.path.isdir(path+"/"+dirc)):
@@ -154,7 +159,7 @@ class Client(threading.Thread):
 							print(file)
 						self.client.send(cetak)
 					elif "HELP" in command:
-						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRETR\r\nSTOR\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nPWD\r\nLIST\r\nHELP\r\n')
+						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRETR\r\nSTOR\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nLIST\r\nHELP\r\n')
 			else:
 				self.client.close()
 				running = 0
