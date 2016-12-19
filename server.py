@@ -54,7 +54,7 @@ class Client(threading.Thread):
 	def run(self):
 		flag = 0
 		running = 1
-		base = "D:/Docs/ITS/Kuliah/Semester 5/PROGJAR/FP/progjar"
+		base = "E:/KULIAH/SEMESTER 5/PROGJAR/progjar"
 		while running:
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
@@ -121,6 +121,14 @@ class Client(threading.Thread):
 							response = "udah keapus"
 						else:
 							response = "ga ada filenya"
+						self.client.send(response)
+					elif "RMD" in command:
+						ddir = command.strip().split('RMD ')[1]
+						if(os.path.isdir(path+"/"+ddir)):
+							os.rmdir(ddir)
+							response = "direktori terhapus"
+						else:
+							response = "Tidak ada direktori"
 						self.client.send(response)
 			else:
 				self.client.close()
