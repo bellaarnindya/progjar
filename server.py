@@ -139,10 +139,6 @@ class Client(threading.Thread):
 						else:
 							response = "Direktori sudah ada"
 						self.client.send(response)
-dn=os.path.join(self.cwd,command[4:-1])
-		os.mkdir(dn)
-		self.client.send('257 Directory created.\r\n')
-
 			else:
 				self.client.close()
 				running = 0
