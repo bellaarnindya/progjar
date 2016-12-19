@@ -106,7 +106,7 @@ class Client(threading.Thread):
 					elif "QUIT" in command:
 						response = "221 Goodbye."
 						self.client.send(response)
-						self.running = False
+						running = 0
 						self.client.close()
 					elif "RNFR" in command:
 						dirc = command.strip().split('RNFR ')[1]
