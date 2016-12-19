@@ -160,23 +160,35 @@ class Client(threading.Thread):
 					elif "HELP" in command:
 						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRETR\r\nSTOR\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nLIST\r\nHELP\r\n')
 					elif "RETR" in command:
-						cmd = command.split("\r\n")
-						#name = cmd[0].split("RETR ")[1]
-						name = command.strip().split('RETR ')[1]
-						file_path = os.path.join(os.getcwd(),name.strip())
-						print 'Downloading: ',file_path
-						size = str(os.path.getsize(file_path))
-						self.client.send(size)
-						fileopen = open(name, "rb")
-						data = fileopen.read(self.size)
-						while True:
-							if not data:
-								break
-							self.client.send(data)
-							data = fileopen.read(self.size)
-						fileopen.close()
-						print 'done\r\n'
-						self.client.send('226 Transfer complete.\r\n')
+						# part = command.split()
+						fstor = self.client.recv(1024)
+
+						server = base+"/"+username+"/dataset/"+fstor
+						# msg = self.client.recv(1024)
+						# path = msg
+						# print path
+						if(not os.path.isfile(server)):
+							print "ga ada"
+							continue
+						#get size
+						buff = os.path.getsize(server)
+						
+						#buat header
+						header = "file-size: "+str(buff)
+						header = header+"\n"
+						self.client.send(header)
+
+						#baca file
+						baca = open(server, "rb")
+						while(buff > 0):
+							box = baca.read(1024)
+							self.client.send(box)
+							buff -= 1024
+						baca.close()
+
+						#get status
+						status = self.client.recv(1024)
+						print status
 					elif "STOR" in command:
 						server = base+"/unggah/"
 						part = command.split()
