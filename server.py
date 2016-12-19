@@ -11,7 +11,7 @@ flag = 0
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
-		self.port = 52
+		self.port = 21
 		self.backlog = 5
 		self.size = 1024
 		self.server = None
