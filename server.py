@@ -57,7 +57,7 @@ class Client(threading.Thread):
 		running = 1
 		base = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/FINAL PROJECT"
 		while running:
-			data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
+			data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}, {'u':'user', 'p': 'password'}]
 			command = self.client.recv(self.size)
 			print 'recv: ', self.address, command
 			if command:
