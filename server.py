@@ -157,9 +157,9 @@ class Client(threading.Thread):
 						newpath=path+"/"+ddir
 						if not os.path.exists(newpath):
 							os.mkdir(newpath)
-							response = "257 \""+newpath+"\" directory created"
+							response = "257 \""+newpath+"\" created succesfully"
 						else:
-							response = "Directory is exists."
+							response = "550 Directory already exists."
 						self.client.send(response)
 					elif "LIST" in command:
 						cetak=''
