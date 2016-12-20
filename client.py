@@ -23,7 +23,7 @@ while True:
 	client_socket.send(command)
 	if "LIST" in command:
 		msg=client_socket.recv(1024)
-		msgprint=msg.strip.split('\r\n')
+		msgprint=msg.strip().split('\r\n')
 		a=0
 		b=len(msgprint)
 		while a<b :
@@ -48,7 +48,7 @@ while True:
 		client_socket.send(header)
 
 		#baca file
-		baca = open(path, "rb")
+		baca = open(path, 'rb')
 		while(buff > 0):
 			box = baca.read(1024)
 			client_socket.send(box)
@@ -87,7 +87,7 @@ while True:
 			if(temp_size<=0):
 				tanda = True
 				break
-		tulis.close
+		tulis.close()
 
 		#kirim status
 		if tanda == True:
@@ -97,6 +97,8 @@ while True:
 		client_socket.send(response)
 		
 	elif "QUIT" in command:
+		response = client_socket.recv(1024)
+		print response
 		client_socket.close()
 		sys.exit(0)
 		break

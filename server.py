@@ -82,6 +82,9 @@ class Client(threading.Thread):
 								response = "530 Login or password incorrect!"
 								username = ''
 							i+=1
+					elif "QUIT" in command:
+						response = "221 Goodbye."
+						self.client.send(response)
 					else:
 						response = "530 Please log in with USER and PASS first."
 					self.client.send(response)
@@ -117,8 +120,6 @@ class Client(threading.Thread):
 					elif "QUIT" in command:
 						response = "221 Goodbye."
 						self.client.send(response)
-						running = 0
-						self.client.close()
 					elif "RNFR" in command:
 						dirc = command.strip().split('RNFR ')[1]
 						if (os.path.isdir(path+"/"+dirc)):
@@ -162,8 +163,8 @@ class Client(threading.Thread):
 					elif "RETR" in command:
 						# part = command.split()
 						fstor = self.client.recv(1024)
-
-						server = base+"/"+username+"/dataset/"+fstor
+						now = os.getcwd()
+						server = now+"/"+fstor
 						# msg = self.client.recv(1024)
 						# path = msg
 						# print path
@@ -179,7 +180,7 @@ class Client(threading.Thread):
 						self.client.send(header)
 
 						#baca file
-						baca = open(server, "rb")
+						baca = open(server, 'rb')
 						while(buff > 0):
 							box = baca.read(1024)
 							self.client.send(box)
@@ -213,11 +214,12 @@ class Client(threading.Thread):
 						while True:
 							box = self.client.recv(1024)
 							temp_size -= 1024
+							print temp_size
 							tulis.write(box)
 							if(temp_size<=0):
 								tanda = True
 								break
-						tulis.close
+						tulis.close()
 
 						#kirim status
 						if tanda == True:
