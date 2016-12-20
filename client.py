@@ -5,7 +5,7 @@ import threading
 import os
 
 client_socket = socket(AF_INET, SOCK_STREAM)
-client_socket.connect(('localhost', 52))
+client_socket.connect(('localhost', 21))
 
 
 while True:
@@ -23,13 +23,16 @@ while True:
 	client_socket.send(command)
 	if "LIST" in command:
 		msg=client_socket.recv(1024)
-		msgprint=msg.strip().split('\r\n')
-		a=0
-		b=len(msgprint)
-		while a<b :
-			cetak=msgprint[a].split(' ')[-1] 
-			print cetak
-			a+=1
+		if msg == []:
+			msgprint=msg.strip().split('\r\n')
+			a=0
+			b=len(msgprint)
+			while a<b :
+				cetak=msgprint[a].split(' ')[-1] 
+				print cetak
+				a+=1
+		else:
+			print msg
 	elif "STOR" in command:
 		#part = command.split()
 		#fstor = ' '.join(part[1:])
@@ -37,7 +40,7 @@ while True:
 		path = msg
 		print path
 		if(not os.path.isfile(path)):
-			print "ga ada"
+			print "450 File not found"
 			continue
 		#get size
 		buff = os.path.getsize(path)
@@ -67,18 +70,18 @@ while True:
 		
 		#get header
 		temp_head = client_socket.recv(1024)
-		print temp_head
+		#print temp_head
 		
 		#get size
 		temp_size = temp_head.split('\n')[0]
 		temp_size = temp_size.split(' ')[1]
 		temp_size = int(temp_size)
-		print temp_size
+		#print temp_size
 
 		#tulis file
 		# now = os.getcwd()
-		print fstor
-		tulis = open("E:/KULIAH/SEMESTER 5/PROGJAR/FP"+"/"+fstor, 'wb')
+		#print fstor
+		tulis = open("E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/FINAL PROJECT/download"+"/"+fstor, 'wb')
 		tanda = False
 		while True:
 			box = client_socket.recv(1024)
@@ -91,10 +94,10 @@ while True:
 
 		#kirim status
 		if tanda == True:
-			response = "berhasil kirim"
+			response = "226 Transfer completed"
 		else:
-			response = "gagal kirim"
-		client_socket.send(response)
+			response = "451 Failed to transfer"
+		print response
 		
 	elif "QUIT" in command:
 		response = client_socket.recv(1024)

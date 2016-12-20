@@ -12,7 +12,7 @@ username = ''
 class Server:
 	def __init__(self):
 		self.host = 'localhost'
-		self.port = 52
+		self.port = 21
 		self.backlog = 5
 		self.size = 1024
 		self.server = None
@@ -52,10 +52,10 @@ class Client(threading.Thread):
 		self.size = 1024
 
 	def run(self):
-		self.client.send('220 Welcome!\r\nSilahkan masukkan Username dan Password dahulu.\r\n')
+		self.client.send('220 Welcome!\r\nPlease enter username and password.\r\n')
 		flag = 0
 		running = 1
-		base = "E:/KULIAH/SEMESTER 5/PROGJAR/progjar"
+		base = "E:/SABILA/Kuliah/SEMESTER 5/PROGJAR/FINAL PROJECT"
 		while running:
 			data = [{'u':'sabila', 'p': 'rani'}, {'u':'mila', 'p': 'raras'}]
 			command = self.client.recv(self.size)
@@ -101,12 +101,15 @@ class Client(threading.Thread):
 						cdir = command.strip().split('CWD ')[1]
 						if (os.path.isdir(path+"/"+cdir)):
 							if cdir == "..":
-								cur = path.split('/')[-1]
-								path = path.split("/"+cur)[0]
-								if(path== base+"/"+username):
+								if path == base+"/"+username:
 									cetak = "/"
 								else:
-									cetak = path.split(base+"/"+username)[1]
+									cur = path.split('/')[-1]
+									path = path.split("/"+cur)[0]
+									if(path== base+"/"+username):
+										cetak = "/"
+									else:
+										cetak = path.split(base+"/"+username)[1]
 								os.chdir(path)
 								response = "250 CWD successful. \""+cetak+"\" is current directory."
 							else:
@@ -157,15 +160,19 @@ class Client(threading.Thread):
 						newpath=path+"/"+ddir
 						if not os.path.exists(newpath):
 							os.mkdir(newpath)
-							response = "257 \""+newpath+"\" created succesfully"
+							cetak = newpath.split(base+"/"+username)[1]
+							response = "257 \""+cetak+"\" created succesfully"
 						else:
 							response = "550 Directory already exists."
 						self.client.send(response)
 					elif "LIST" in command:
 						cetak=''
-						for file in os.listdir(path):
-							cetak=cetak+"\r\n"+file
-							print(file)
+						if os.listdir(path):
+							for file in os.listdir(path):
+								cetak=cetak+"\r\n"+file
+								print(file)
+						else:
+							cetak = "550 Directory/file not found."
 						self.client.send(cetak)
 					elif "HELP" in command:
 						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nLIST\r\nHELP\r\nRETR\r\nSTOR\r\n')
@@ -174,7 +181,7 @@ class Client(threading.Thread):
 						now = os.getcwd()
 						server = now+"/"+fstor
 						if(not os.path.isfile(server)):
-							print "ga ada"
+							print "450 File not found"
 							continue
 						#get size
 						buff = os.path.getsize(server)
@@ -196,7 +203,7 @@ class Client(threading.Thread):
 						status = self.client.recv(1024)
 						print status
 					elif "STOR" in command:
-						server = base+"/unggah/"
+						server = base+"/upload/"
 						part = command.split()
 						fstor = ' '.join(part[1:])
 						self.client.send(server+fstor)
@@ -204,13 +211,13 @@ class Client(threading.Thread):
 						
 						#get header
 						temp_head = self.client.recv(1024)
-						print temp_head
+						#print temp_head
 						
 						#get size
 						temp_size = temp_head.split('\n')[0]
 						temp_size = temp_size.split(' ')[1]
 						temp_size = int(temp_size)
-						print temp_size
+						#print temp_size
 
 						#tulis file
 						now = os.getcwd()
@@ -219,7 +226,6 @@ class Client(threading.Thread):
 						while True:
 							box = self.client.recv(1024)
 							temp_size -= 1024
-							print temp_size
 							tulis.write(box)
 							if(temp_size<=0):
 								tanda = True
@@ -228,15 +234,16 @@ class Client(threading.Thread):
 
 						#kirim status
 						if tanda == True:
-							response = "berhasil kirim"
+							response = "226 Transfer completed"
 						else:
-							response = "gagal kirim"
+							response = "451 Failed to transfer"
 						self.client.send(response)
-
-
+					else:
+						response = "503 Bad sequencce of commands."
+						self.client.send(response)
 			else:
-				self.client.close()
 				running = 0
+				self.client.close()
 		
 
 if __name__ == "__main__":
