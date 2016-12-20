@@ -152,6 +152,15 @@ class Client(threading.Thread):
 						else:
 							response = "550 Directory not found"
 						self.client.send(response)
+					elif "MKD" in command:
+						ddir = command.strip().split('MKD ')[1]
+						newpath=path+"/"+ddir
+						if not os.path.exists(newpath):
+							os.mkdir(newpath)
+							response = "257 \""+newpath+"\" directory created"
+						else:
+							response = "Directory is exists."
+						self.client.send(response)
 					elif "LIST" in command:
 						cetak=''
 						for file in os.listdir(path):
@@ -159,15 +168,11 @@ class Client(threading.Thread):
 							print(file)
 						self.client.send(cetak)
 					elif "HELP" in command:
-						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRETR\r\nSTOR\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nLIST\r\nHELP\r\n')
+						self.client.send('214-The following commands are recognized:\r\nPWD\r\nCWD\r\nQUIT\r\nRNTO\r\nDELE\r\nRMD\r\nMKD\r\nLIST\r\nHELP\r\nRETR\r\nSTOR\r\n')
 					elif "RETR" in command:
-						# part = command.split()
 						fstor = self.client.recv(1024)
 						now = os.getcwd()
 						server = now+"/"+fstor
-						# msg = self.client.recv(1024)
-						# path = msg
-						# print path
 						if(not os.path.isfile(server)):
 							print "ga ada"
 							continue
